@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Match Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000; /* Black background color */
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        h2 {
+            color: #fff; /* White text color */
+            margin-bottom: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .section {
+            margin-bottom: 20px; /* Reduced margin */
+            width: 100%;
+        }
+        .section-title {
+            font-size: 24px;
+            color: #1a936f; /* Updated section title color */
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+        .matches {
+            list-style-type: none;
+            padding: 0;
+        }
+        .match {
+            border: 1px solid #ccc;
+            border-radius: 10px; /* Rounded edges */
+            padding: 10px; /* Reduced padding */
+            margin-bottom: 10px; /* Reduced margin */
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background color */
+            max-width: 280px; /* Reduced width to 280px */
+            margin-left: auto;
+            margin-right: auto;
+            position: relative; /* Added position relative */
+        }
+        .match .details {
+            display: flex;
+            justify-content: space-between; /* Align date and venue horizontally */
+            margin-bottom: 5px; /* Reduced margin */
+        }
+        .match .details p {
+            margin: 0;
+            text-align: left;
+            display: inline-block; /* Display as inline-block */
+        }
+        .match p {
+            text-align: left;
+            margin: 3px 0; /* Reduced margin */
+        }
+        .match p strong {
+            display: inline-block;
+            width: 70px; /* Adjust as needed */
+            text-align: right; /* Align colon ":" to the right */
+        }
+        .match p strong.team {
+            font-weight: bold; /* Make team values bold */
+            width: auto; /* Adjust width to fit content */
+        }
+        .match p::before {
+            content: "\00a0\00a0\00a0"; /* Three non-breaking spaces */
+        }
+        .link {
+            color: #005d5d; /* Updated link color */
+            text-decoration: underline;
+            cursor: pointer;
+            display: block;
+            margin-top: 10px;
+            color: #fff; /* White text color */
+        }
+        button {
+            background-color: #1a936f; /* Updated button background color */
+            border: none;
+            color: white;
+            padding: 5px 10px; /* Reduced padding */
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px; /* Reduced font size */
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 5px; /* Reduced margin top */
+            position: absolute; /* Added position absolute */
+            bottom: 5px; /* Adjusted bottom spacing */
+            right: 5px; /* Adjusted right alignment */
+        }
+        button:hover {
+            background-color: #117a55; /* Updated button hover color */
+        }
+        p {
+            margin: 3px 0; /* Reduced margin */
+            color: #666;
+        }
+        strong {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h2>Cricket Match Dashboard</h2>
+    <div class="container">
+        <div class="section">
+            <h3 class="section-title" onclick="toggleSection('live')">Live Matches</h3>
+            <ul class="matches live" id="liveMatches"></ul>
+        </div>
+        <div class="section">
+            <h3 class="section-title" onclick="toggleSection('upcoming')">Upcoming Matches</h3>
+            <ul class="matches upcoming" id="upcomingMatches"></ul>
+        </div>
+        <div class="section">
+            <h3 class="section-title" onclick="toggleSection('completed')">Completed Matches</h3>
+            <ul class="matches completed" id="completedMatches"></ul>
+            <p class="link" onclick="window.location.href = 'display.html';">View all completed matches</p>
+        </div>
+    </div>
+
+    <script>
+        function loadMatches() {
+            var matches = JSON.parse(localStorage.getItem("matches")) || [];
+            var today = new Date();
+            today.setHours(0, 0, 0, 0); // Set hours, minutes, seconds, and milliseconds to 0 for accurate date comparison
+            var completedMatches = [];
+            var liveMatches = [];
+            var upcomingMatches = [];
+
+            matches.forEach(function(match) {
+                var matchDate = new Date(match.date);
+                matchDate.setHours(0, 0, 0, 0); // Set hours, minutes, seconds, and milliseconds to 0 for accurate date comparison
+                if (matchDate < today) {
+                    completedMatches.push(match);
+                } else if (matchDate.getTime() === today.getTime()) {
+                    liveMatches.push(match);
+                } else {
+                    upcomingMatches.push(match);
+                }
+            });
+
+            completedMatches.sort(function(a, b) {
+                return new Date(b.date) - new Date(a.date);
+            });
+
+            displayMatches(liveMatches, "liveMatches");
+            displayMatches(completedMatches.slice(0, 5), "completedMatches");
+
+            // Sort and display matches in the upcoming section
+            upcomingMatches.sort(function(a, b) {
+                return new Date(a.date) - new Date(b.date);
+            });
+            displayMatches(upcomingMatches, "upcomingMatches");
+        }
+
+        function displayMatches(matches, elementId) {
+            var matchesList = document.getElementById(elementId);
+            matchesList.innerHTML = "";
+            matches.forEach(function(match) {
+                var matchElement = document.createElement("li");
+                matchElement.classList.add("match");
+                matchElement.innerHTML = `
+                    <div class="details">
+                        <p>${match.date}</p>
+                        <p>${match.venue}</p>
+                    </div>
+                    <p><strong class="team">${match.team1}</strong></p>
+                    <p><strong class="team">${match.team2}</strong></p>
+                    <button onclick="viewAnalysis(${match.id})">Full Analysis</button>
+                `;
+                matchesList.appendChild(matchElement);
+            });
+        }
+
+        function toggleSection(sectionId) {
+            var section = document.querySelector("." + sectionId);
+            section.style.display = (section.style.display === "none") ? "block" : "none";
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            loadMatches();
+        });
+
+        function viewAnalysis(matchId) {
+            window.location.href = 'analysis.html?id=' + matchId;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matches on the Day</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+            width: 100px; /* Adjust the width based on the longest label */
+            display: inline-block;
+            text-align: left; /* Left-align the labels */
+        }
+        input[type="date"],
+        button {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            width: 200px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .matches-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .match {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            background-color: #fff;
+            width: calc(25% - 20px); /* 25% minus margins */
+            max-width: calc(25% - 20px); /* 25% minus margins */
+        }
+        .match p {
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+        }
+        .match p strong {
+            flex: 0 0 auto;
+            width: 100px; /* Adjust the width based on the longest label */
+            text-align: right;
+        }
+        .match p span {
+            flex: 1;
+            text-align: left;
+            margin-left: 10px;
+        }
+        .match button {
+            margin-top: 10px;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Matches on the Day</h2>
+        <div>
+            <input type="date" id="matchDate" name="matchDate">
+        </div>
+        <div>
+            <button onclick="loadMatches()">Submit Date</button>
+        </div>
+    </div>
+    <div class="matches-container" id="matchesList"></div>
+
+    <script>
+        function loadMatches() {
+            var selectedDate = document.getElementById("matchDate").value;
+            var matches = JSON.parse(localStorage.getItem("matches")) || [];
+            var filteredMatches = matches.filter(function(match) {
+                return match.date === selectedDate;
+            });
+            displayMatches(filteredMatches);
+        }
+
+        function displayMatches(matches) {
+            var matchesContainer = document.getElementById("matchesList");
+            matchesContainer.innerHTML = "";
+            matches.forEach(function(match) {
+                var matchElement = document.createElement("div");
+                matchElement.classList.add("match");
+                matchElement.innerHTML = `
+                    <p><strong>Team1 :</strong> <span>${match.team1}</span></p>
+                    <p><strong>Team2 :</strong> <span>${match.team2}</span></p>
+                    <p><strong>Venue :</strong> <span>${match.venue}</span></p>
+                    <p><strong>Date :</strong> <span>${match.date}</span></p>
+                    <button onclick="viewAnalysis(${match.id})">View Full Analysis</button>
+                `;
+                matchesContainer.appendChild(matchElement);
+            });
+        }
+
+        function viewAnalysis(matchId) {
+            window.location.href = 'analysis.html?id=' + matchId;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Match Prediction Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #666;
+        }
+        input[type="text"],
+        input[type="date"],
+        input[type="number"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        input[type="button"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        input[type="button"]:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h2>Cricket Match Prediction Form</h2>
+    <form id="predictionForm">
+        <label for="team1">Team 1:</label>
+        <input type="text" id="team1" name="team1" required>
+        
+        <label for="team2">Team 2:</label>
+        <input type="text" id="team2" name="team2" required>
+        
+        <label for="venue">Venue:</label>
+        <input type="text" id="venue" name="venue" required>
+        
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date" required>
+
+        <h3>Playing Conditions:</h3>
+        <label for="pitch_type">Pitch Type:</label>
+        <input type="text" id="pitch_type" name="pitch_type" required>
+        
+        <label for="grass_level">Grass Level:</label>
+        <input type="text" id="grass_level" name="grass_level" required>
+        
+        <label for="moisture_content">Moisture Content:</label>
+        <input type="text" id="moisture_content" name="moisture_content" required>
+        
+        <label for="favourable_for">Favourable for:</label>
+        <input type="text" id="favourable_for" name="favourable_for" required>
+        
+        <input type="button" value="Submit" onclick="submitForm()">
+    </form>
+
+    <script>
+        function submitForm() {
+            var team1 = document.getElementById("team1").value;
+            var team2 = document.getElementById("team2").value;
+            var venue = document.getElementById("venue").value;
+            var date = document.getElementById("date").value;
+            var pitch_type = document.getElementById("pitch_type").value;
+            var grass_level = document.getElementById("grass_level").value;
+            var moisture_content = document.getElementById("moisture_content").value;
+            var favourable_for = document.getElementById("favourable_for").value;
+
+            var matches = JSON.parse(localStorage.getItem("matches")) || [];
+            var newId = generateUniqueId(matches);
+            
+            matches.push({
+                id: newId,
+                team1: team1,
+                team2: team2,
+                venue: venue,
+                date: date,
+                playing_conditions: {
+                    pitch_type: pitch_type,
+                    grass_level: grass_level,
+                    moisture_content: moisture_content,
+                    favourable_for: favourable_for
+                }
+            });
+
+            localStorage.setItem("matches", JSON.stringify(matches));
+
+            alert("Prediction submitted successfully!");
+        }
+
+        function generateUniqueId(matches) {
+            var maxId = 0;
+            matches.forEach(function(match) {
+                maxId = Math.max(maxId, match.id);
+            });
+            return maxId + 1;
+        }
+    </script>
+</body>
+</html>

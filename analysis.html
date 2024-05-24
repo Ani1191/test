@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Analysis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000; /* Complete black background */
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+            color: #fff; /* White text color */
+        }
+        h2 {
+            text-align: center;
+            color: #fff; /* White text color */
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .analysis-section {
+            width: 100%;
+            max-width: 350px; /* Adjusted box width */
+            background-color: rgba(255, 255, 255, 0.9); /* White background with slight blending effect */
+            padding: 15px;
+            border-radius: 10px; /* Round edges */
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3); /* Slight shadow for boxes */
+            margin-bottom: 20px;
+        }
+        .analysis-section h3 {
+            margin-top: 0;
+            color: #333;
+            text-align: center;
+        }
+        .analysis-item {
+            margin-bottom: 10px;
+            color: #666;
+            display: flex;
+            align-items: center;
+        }
+        .analysis-label {
+            font-weight: bold;
+            width: 120px; /* Adjust the width of the labels */
+            flex: 0 0 auto;
+        }
+        .colon {
+            width: 20px; /* Adjust the width of the colon */
+            text-align: center;
+            flex: 0 0 auto;
+            margin-left: 5px; /* Move colon slightly towards the center */
+        }
+    </style>
+</head>
+<body>
+    <h2>Match Analysis</h2>
+    <div class="container">
+        <div class="analysis-section" id="matchDetails">
+            <h3>Match Details</h3>
+        </div>
+        <div class="analysis-section" id="playingConditions">
+            <h3>Playing Conditions</h3>
+        </div>
+        <div class="analysis-section" id="firstInningsInsights">
+            <h3>First Innings Insights</h3>
+        </div>
+        <div class="analysis-section" id="expertInsights">
+            <h3>Expert Insights</h3>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var matchId = getParameterByName("id");
+            var matches = JSON.parse(localStorage.getItem("matches")) || [];
+            var match = matches.find(function(match) {
+                return match.id == matchId;
+            });
+
+            if (match) {
+                var matchDetailsDiv = document.getElementById("matchDetails");
+                matchDetailsDiv.innerHTML += `
+                    <div class="analysis-item"><span class="analysis-label">Match ID</span><span class="colon">:</span> ${match.id}</div>
+                    <div class="analysis-item"><span class="analysis-label">Team 1</span><span class="colon">:</span> ${match.team1}</div>
+                    <div class="analysis-item"><span class="analysis-label">Team 2</span><span class="colon">:</span> ${match.team2}</div>
+                    <div class="analysis-item"><span class="analysis-label">Venue</span><span class="colon">:</span> ${match.venue}</div>
+                    <div class="analysis-item"><span class="analysis-label">Date</span><span class="colon">:</span> ${match.date}</div>
+                `;
+
+                var playingConditionsDiv = document.getElementById("playingConditions");
+                playingConditionsDiv.innerHTML += `
+                    <div class="analysis-item"><span class="analysis-label">Pitch Type</span><span class="colon">:</span> ${match.playing_conditions.pitch_type}</div>
+                    <div class="analysis-item"><span class="analysis-label">Grass Level</span><span class="colon">:</span> ${match.playing_conditions.grass_level}</div>
+                    <div class="analysis-item"><span class="analysis-label">Moisture Content</span><span class="colon">:</span> ${match.playing_conditions.moisture_content}</div>
+                    <div class="analysis-item"><span class="analysis-label">Favourable for</span><span class="colon">:</span> ${match.playing_conditions.favourable_for}</div>
+                `;
+
+                var firstInningsInsightsDiv = document.getElementById("firstInningsInsights");
+                firstInningsInsightsDiv.innerHTML += `
+                    <div class="analysis-item"><span class="analysis-label">Powerplay</span><span class="colon">:</span> ${match.first_innings_insights.powerplay || "To be updated"}</div>
+                    <div class="analysis-item"><span class="analysis-label">Middle Phase</span><span class="colon">:</span> ${match.first_innings_insights.middle_phase || "To be updated"}</div>
+                    <div class="analysis-item"><span class="analysis-label">Death Overs</span><span class="colon">:</span> ${match.first_innings_insights.death_overs || "To be updated"}</div>
+                    <div class="analysis-item"><span class="analysis-label">Par Score</span><span class="colon">:</span> ${match.first_innings_insights.par_score || "To be updated"}</div>
+                    <div class="analysis-item"><span class="analysis-label">${match.team1} Score </span><span class="colon">:</span> ${match.predicted_first_innings_score.team1_score || "To be updated"}</div>
+                    <div class="analysis-item"><span class="analysis-label">${match.team2} Score </span><span class="colon">:</span> ${match.predicted_first_innings_score.team2_score || "To be updated"}</div>
+                `;
+                
+                var expertInsightsDiv = document.getElementById("expertInsights");
+                // Split the expert insights into separate lines
+                var expertInsightsLines = (match.expert_insights || "To be updated").split('\n');
+                expertInsightsLines.forEach(function(line) {
+                    expertInsightsDiv.innerHTML += `<div class="analysis-item">${line}</div>`;
+                });
+            } else {
+                alert("Match not found!");
+            }
+        });
+
+        function getParameterByName(name) {
+            var url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+    </script>
+</body>
+</html>
