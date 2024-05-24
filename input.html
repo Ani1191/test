@@ -79,49 +79,47 @@
         <label for="favourable_for">Favourable for:</label>
         <input type="text" id="favourable_for" name="favourable_for" required>
         
-        <input type="button" value="Submit" onclick="submitForm()">
+        <!-- Change button type to "submit" to submit the form -->
+        <input type="submit" value="Submit">
     </form>
 
     <script>
-        function submitForm() {
-            var team1 = document.getElementById("team1").value;
-            var team2 = document.getElementById("team2").value;
-            var venue = document.getElementById("venue").value;
-            var date = document.getElementById("date").value;
-            var pitch_type = document.getElementById("pitch_type").value;
-            var grass_level = document.getElementById("grass_level").value;
-            var moisture_content = document.getElementById("moisture_content").value;
-            var favourable_for = document.getElementById("favourable_for").value;
-
-            var matches = JSON.parse(localStorage.getItem("matches")) || [];
-            var newId = generateUniqueId(matches);
+        document.getElementById('predictionForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent the default form submission behavior
             
-            matches.push({
-                id: newId,
-                team1: team1,
-                team2: team2,
-                venue: venue,
-                date: date,
-                playing_conditions: {
-                    pitch_type: pitch_type,
-                    grass_level: grass_level,
-                    moisture_content: moisture_content,
-                    favourable_for: favourable_for
+            // Get form data
+            var formData = {
+                team1: document.getElementById("team1").value,
+                team2: document.getElementById("team2").value,
+                venue: document.getElementById("venue").value,
+                date: document.getElementById("date").value,
+                pitch_type: document.getElementById("pitch_type").value,
+                grass_level: document.getElementById("grass_level").value,
+                moisture_content: document.getElementById("moisture_content").value,
+                favourable_for: document.getElementById("favourable_for").value
+            };
+
+            // Submit form data to DynamoDB
+            try {
+                const response = await fetch('https://your-api-endpoint.amazonaws.com/your-resource-path', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Replace 'your-api-key' with your actual API key
+                        'x-api-key': 'your-api-key' 
+                    },
+                    body: JSON.stringify(formData)
+                });
+                if (response.ok) {
+                    alert('Prediction submitted successfully!');
+                } else {
+                    throw new Error('Failed to submit prediction');
                 }
-            });
-
-            localStorage.setItem("matches", JSON.stringify(matches));
-
-            alert("Prediction submitted successfully!");
-        }
-
-        function generateUniqueId(matches) {
-            var maxId = 0;
-            matches.forEach(function(match) {
-                maxId = Math.max(maxId, match.id);
-            });
-            return maxId + 1;
-        }
+            } catch (error) {
+                console.error('Error submitting prediction:', error);
+                alert('Failed to submit prediction. Please try again later.');
+            }
+        });
     </script>
 </body>
 </html>
